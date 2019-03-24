@@ -86,7 +86,9 @@ where second part after bearer is your token generated.<br>
 
 6. Now try login using both the user i.e. amir and dharmendra. I have kept both the password as plain for testing. You can use bcrypt or other similar standards
 
-7. You can pass data in either of the formats i.e. url-encoded under body by providing key value pair or you can pass json text as shown in the below screemshots as json data. I am passing email and password.
+7. You can pass data in either of the formats i.e. url-encoded under body by providing key value pair or you can pass json text as shown in the below screenshots as json data. I am passing email and password.
+
+8. I have attached my postman's collection files for request checking
 
 
 

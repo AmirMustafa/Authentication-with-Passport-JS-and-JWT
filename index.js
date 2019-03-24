@@ -55,6 +55,7 @@ app.get('/', (req, res) => {
     res.json({"message":"Express is up"});
 });
 
+// Login route - here we will generate the token - copy the token generated in the input
 app.post("/login", function(req, res) {
     if(req.body.email && req.body.password){
       // var name = req.body.name;
@@ -77,9 +78,12 @@ app.post("/login", function(req, res) {
     }
   });
 
+  // now there can be as many route you want that must have the token to run, otherwise will show unauhorized access. Will show success 
+  // when token auth is successfilly passed.
   app.get("/secret", passport.authenticate('jwt', { session: false }), (req, res) => {
     res.json("Success! You can not see this without a token");
   });
   
 
+  // server 
 app.listen(5000, () => console.log('Listening to port 5000'));

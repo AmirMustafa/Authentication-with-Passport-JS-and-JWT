@@ -9,9 +9,97 @@ Here we will be using Express dependency of Node JS. We are creating token using
 <br>b. npm install --save express body-parser passport passport-jwt jsonwebtoken lodas
 
 ## Snippets
+1. Including basic packages:
+```
+var _ = require('lodash');
+var express = require('express') ;
+var bodyParser = require('body-parser');
+var jwt = require('jsonwebtoken');
 
-<br>
-<br>
+var passport = require('passport');
+var passportJWT = require("passport-jwt");
+
+var ExtractJwt = passportJWT.ExtractJwt;
+var JwtStrategy = passportJWT.Strategy;
+
+```
+
+2. Adding data - later on you can check the data from database(mongo db or sql):
+```
+// array for data login
+var users = [
+    {
+        id: 1,
+        name: 'amir',
+        email: 'amirengg15@gmail.com',
+        password: '1234'
+    },
+    {
+        id: 2,
+        name: 'dharmendra',
+        email: 'dharmendra@gmail.com',
+        password: '1111'
+    }
+];
+
+```
+
+3. Next steps are strategy to include authentication:
+
+```
+// strategy for using web token authentication
+var jwtOptions = {}
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+jwtOptions.secretOrKey = 'tasmanianDevil';
+
+var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
+    console.log('payload received', jwt_payload);
+    // usually this would be a database call:
+    var user = users[_.findIndex(users, {id: jwt_payload.id})];     // checking into are user array using loaddash array search
+    if (user) {
+        next(null, user);
+    } else {
+        next(null, false);
+    }
+});
+passport.use(strategy);
+
+```
+
+4. Invoking express and using passport middleware. In addition to that including Postman's url-encoded and json middleware to accept data from postman
+
+```
+var app = express();
+app.use(passport.initialize());
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended:true}));
+
+// parse application/json
+app.use(bodyParser.json());
+
+```
+
+5. Routes handeling - login route will create token. Copy the token and use that token in other routes that needs authorization (here secret route). Along with the url pass <br>
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTUzNDEyODQyfQ.2L6V3KrwSIs1vRuLOY9yHg5vwGFkvXDxbWE0sXRfB-A <br>
+where second part after bearer is your token generated.<br>
+
+6. Now try login using both the user i.e. amir and dharmendra. I have kept both the password as plain for testign. You can use bcrypt or other similar standards
+
+7. You can pass data in either of the formats i.e. url-encoded under body by providing key value pair or you can pass json text as shown in the below screemshots as json data. I am passing email and password.
+
+
 
 ## Screenshots
 
+![Screenshot of Passport jwt auth](https://user-images.githubusercontent.com/15896579/54878109-0c29ea80-4e4e-11e9-9b79-2e7e8d546a1c.PNG?raw=true "Screenshot of Passport jwt auth")
+
+![Screenshot of Passport jwt auth](https://user-images.githubusercontent.com/15896579/54878111-10ee9e80-4e4e-11e9-8767-346650c1653b.PNG?raw=true "Screenshot of Passport jwt auth")
+
+![Screenshot of Passport jwt auth](https://user-images.githubusercontent.com/15896579/54878112-13e98f00-4e4e-11e9-9e3d-6165d1484acc.PNG?raw=true "Screenshot of Passport jwt auth")
+
+![Screenshot of Passport jwt auth](https://user-images.githubusercontent.com/15896579/54878114-1946d980-4e4e-11e9-9370-7ace46d2bdbb.PNG?raw=true "Screenshot of Passport jwt auth")
+
+![Screenshot of Passport jwt auth](https://user-images.githubusercontent.com/15896579/54878115-1cda6080-4e4e-11e9-8c60-59efc648dbd4.PNG?raw=true "Screenshot of Passport jwt auth")
+
+![Screenshot of Passport jwt auth](https://user-images.githubusercontent.com/15896579/54878118-21067e00-4e4e-11e9-8844-93c1820c2b31.PNG?raw=true "Screenshot of Passport jwt auth")

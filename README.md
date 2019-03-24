@@ -84,6 +84,47 @@ app.use(bodyParser.json());
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTUzNDEyODQyfQ.2L6V3KrwSIs1vRuLOY9yHg5vwGFkvXDxbWE0sXRfB-A <br>
 where second part after bearer is your token generated.<br>
 
+```
+app.get('/', (req, res) => {
+    res.json({"message":"Express is up"});
+});
+
+// Login route - here we will generate the token - copy the token generated in the input
+app.post("/login", function(req, res) {
+    if(req.body.email && req.body.password){
+      // var name = req.body.name;
+      var email = req.body.email;
+      var password = req.body.password;
+    }
+    // usually this would be a database call:
+    var user = users[_.findIndex(users, {email: email})];
+    if( ! user ){
+      res.status(401).json({message:"no such user/email id found"});
+    }
+  
+    if(user.password === req.body.password) {
+      // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
+      var payload = {id: user.id};
+      var token = jwt.sign(payload, jwtOptions.secretOrKey);
+      res.json({message: "ok", token: token});
+    } else {
+      res.status(401).json({message:"passwords did not match"});
+    }
+  });
+
+  // now there can be as many route you want that must have the token to run, otherwise will show unauhorized access. Will show success 
+  // when token auth is successfilly passed.
+  app.get("/secret", passport.authenticate('jwt', { session: false }), (req, res) => {
+    res.json("Success! You can not see this without a token");
+  });
+  
+
+  // server 
+app.listen(5000, () => console.log('Listening to port 5000'));
+
+
+```
+
 6. Now try login using both the user i.e. amir and dharmendra. I have kept both the password as plain for testing. You can use bcrypt or other similar standards
 
 7. You can pass data in either of the formats i.e. url-encoded under body by providing key value pair or you can pass json text as shown in the below screenshots as json data. I am passing email and password.
